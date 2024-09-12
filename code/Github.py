@@ -32,6 +32,7 @@ for j in range (0,500,30):
         Git_users_dict['user_id'] = data['id']
         usr = requests.get(results[i]['url']).json()
         user_url.append(usr)
+        # Get the basic user details and get the inner urls
         if(user_url[i]['name']):
             print(f"Getting data for user id:{data['id']}")
             Git_users_dict['Email'] = user_url[i]['email']
@@ -39,14 +40,14 @@ for j in range (0,500,30):
             Git_users_dict['Followers Count']= user_url[i]['followers']
             Git_users_dict['Following Count']= user_url[i]['following']
             Git_users_dict['Public Reposcount']= user_url[i]['public_repos']
-            Git_users_dict['Public Gistscount']= user_url[i]['public_repos']
+            Git_users_dict['Public Gistscount']= user_url[i]['public_gists']
             User_Data.append(Git_users_dict)
-            repos_url = requests.get(user_url[i]['repos_url']).json() #need a for loop to interatae each repo details#
+            repos_url = requests.get(user_url[i]['repos_url']).json()
             starred_url= user_url[i]['starred_url']
             starred_url = starred_url.split('{')
-            starred_repo = requests.get(starred_url[0]).json() #need a for loop to interatae each starred repo details#
+            starred_repo = requests.get(starred_url[0]).json()
             time.sleep(1)
-
+            # Gets the data from the repositories fi the user
             for j in range(len(repos_url)):
                 Repo_dict = {}
                 each_repo = (repos_url[j])
@@ -60,7 +61,7 @@ for j in range (0,500,30):
                     Repo_dict['open_issues'] = each_repo['open_issues']
                     Repos_Data.append(Repo_dict)
                     time.sleep(1)
-
+            # Gets the data from the starred repositories fi the user
             for k in range(len(starred_repo)):
                 Stared_repo_dict = {}
                 starredrepo = (starred_repo[k])
