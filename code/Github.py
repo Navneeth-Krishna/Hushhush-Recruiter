@@ -25,15 +25,16 @@ def userdetails(id , user):
 def UserRepoDetails (id , repos_data):
    Repos_list = []
    for repos in repos_data:
-      Repo_dict ={
-         'user_id' : id,
-         'stargazers_count' : repos['stargazers_count'],
-         'watchers_count':  repos['watchers_count'],
-         'repo_id' : repos['id'],
-         'language' : repos['language'],
-         'forks_count': repos['forks_count'],
-         'open_issues': repos['open_issues']
-         }
+      if repos['language']:
+         Repo_dict ={
+            'user_id' : id,
+            'stargazers_count' : repos['stargazers_count'],
+            'watchers_count':  repos['watchers_count'],
+            'repo_id' : repos['id'],
+            'language' : repos['language'],
+            'forks_count': repos['forks_count'],
+            'open_issues': repos['open_issues']
+            }
       Repos_list.append(Repo_dict)
    return Repos_list
 
