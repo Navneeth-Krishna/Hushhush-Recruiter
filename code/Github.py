@@ -35,7 +35,7 @@ def UserRepoDetails (id , repos_data):
             'forks_count': repos['forks_count'],
             'open_issues': repos['open_issues']
             }
-      Repos_list.append(Repo_dict)
+         Repos_list.append(Repo_dict)
    return Repos_list
 
 # Logic for getting the data
