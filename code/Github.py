@@ -22,6 +22,7 @@ def userdetails(id , user):
    Git_users_dict['Public Gistscount']= user['public_gists']
    return Git_users_dict
 
+#function to get user's Repo details
 def UserRepoDetails (id , repos_data):
    Repos_list = []
    for repos in repos_data:
@@ -42,35 +43,38 @@ def UserRepoDetails (id , repos_data):
 headers = {
     "Authorization": "token  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"
 }
-for j in range (0,1000,30):
+for j in range (0,875,30):
    link = f"https://api.github.com/users?since={j}"
    try:
       response = requests.get(link, headers=headers, timeout=5)
       response.raise_for_status()
       results = response.json()
-      for i in range(len(results)):
-         Git_users_dict = {}
-         data=(results[i])
+      for user in results:
+         user_url = user['url']
+         repos_url = user['repos_url']
+
          #  To avoid duplicate fetching of same user data
-         if(data['id'] > completed_user_id):
-            usr = requests.get(results[i]['url']).json()
-            user_url.append(usr)
-            repos_url = requests.get(data['repos_url'], headers= headers, timeout=5)
-            repos_url.raise_for_status
-            reposdata = repos_url.json()
+         if(user['id'] > completed_user_id):
+            usr = requests.get(user_url, headers= headers, timeout=5)
+            # user_url.append(usr)
+            usr.raise_for_status
+            userdata = usr.json()
+            repos = requests.get(repos_url, headers= headers, timeout=5)
+            repos.raise_for_status
+            reposdata = repos.json()
 
       # Get the basic user details and get the inner urls
-            if(user_url[i]['name']):
-               print(f"Getting data for user id:{data['id']}")
-               Git_users_dict = userdetails(data['id'],user_url[i])
+            if(userdata['name']):
+               print(f"Getting data for user id:{user['id']}")
+               Git_users_dict = userdetails(user['id'],userdata)
                User_Data.append(Git_users_dict)
                time.sleep(1)
          
          # Gets the data from the repositories for the user
-               Repo_dict = UserRepoDetails(data['id'], reposdata)
+               Repo_dict = UserRepoDetails(user['id'], reposdata)
                Repos_Data.extend(Repo_dict)
                time.sleep(1)
-      completed_user_id = data['id']
+      completed_user_id = user['id']
 
    except requests.exceptions.RequestException as e:
        print(f"Error fetching data for {j} with error {e}")
