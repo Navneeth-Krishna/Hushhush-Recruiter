@@ -5,229 +5,127 @@ import pandas as pd
 conn = sqlite3.connect('hushhushDB.db')
 c = conn.cursor()
 
-# Create the table if it does not exist
+# # --- Create tables based on your CSV files ---
+
+# # Creating table for Github_Users_Repos
 c.execute('''
-    CREATE TABLE IF NOT EXISTS stackoverflow_data (
-        UserID INT PRIMARY KEY,
-        DisplayName TEXT,
-        Reputation INT,
-        ProfileURL TEXT,
-        Location TEXT,
-        CreationDate BIGINT,
-        LastAccessDate BIGINT,
-        TotalVotes INT,
-        GoldBadges INT,
-        SilverBadges INT,
-        BronzeBadges INT,
-        TopTags TEXT
+    CREATE TABLE IF NOT EXISTS github_users_repos (
+        user_id INTEGER,
+        stargazers_count INTEGER,
+        watchers_count INTEGER,
+        repo_id INTEGER PRIMARY KEY,
+        language TEXT,
+        forks_count INTEGER,
+        open_issues INTEGER,
+        FOREIGN KEY (user_id) REFERENCES github_users(user_id)
     )
 ''')
 
-# Commit the changes to the database
-conn.commit()
-
-# Read the CSV file into a DataFrame
-stackoverflow_data_df = pd.read_csv('/Users/vedanth/Desktop/HushHush/stackoverflow_data.csv')
-
-# Print DataFrame columns and the first few rows for debugging
-print("DataFrame columns:", stackoverflow_data_df.columns)
-print(stackoverflow_data_df.head())
-
-# Define the insert query with the correct number of placeholders
-insert_query = '''
-    INSERT INTO stackoverflow_data (
-        UserID, DisplayName, Reputation, ProfileURL, Location, 
-        CreationDate, LastAccessDate, TotalVotes, GoldBadges, 
-        SilverBadges, BronzeBadges, TopTags
-    ) VALUES (
-        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
-    )
-'''
-
-# Insert data into the stackoverflow_data table
-for row in stackoverflow_data_df.itertuples(index=False, name=None):
-    if len(row) == 12:  # Ensure the row has exactly 12 values
-        c.execute(insert_query, row)
-    else:
-        print(f"Skipping row with incorrect number of values: {row}")
-
-
-# Create the GitUsers table
+# # Creating table for Github_Users
 c.execute('''
-    CREATE TABLE IF NOT EXISTS GitUsers (
-        user_id INT PRIMARY KEY,        
-        Email VARCHAR(150),               
-        Name TEXT,                 
-        Followers_Count INT,            
-        Following_Count INT,            
-        Public_Reposcount INT,          
-        Public_Gistscount INT
+    CREATE TABLE IF NOT EXISTS github_users (
+        user_id INTEGER PRIMARY KEY,
+        Email TEXT,
+        Name TEXT,
+        Followers_Count INTEGER,
+        Following_Count INTEGER,
+        Public_Reposcount INTEGER,
+        Public_Gistscount INTEGER
     )
 ''')
 
-# Create the Repo_dict table
+# Creating table for StackOverflow data
 c.execute('''
-    CREATE TABLE IF NOT EXISTS Repo_dict (
-        repo_id INT PRIMARY KEY,        
-        user_id INT,                    
-        stargazers_count INT,           
-        watchers_count INT,             
-        language TEXT,                      
-        forks_count INT,                
-        open_issues INT,                
-        FOREIGN KEY (user_id) REFERENCES GitUsers(user_id)
-    )
-''')
-
-# Create the Stared_repo_dict table
-c.execute('''
-    CREATE TABLE IF NOT EXISTS Stared_repo_dict (
-        repo_id INT,                    
-        user_id INT,                    
-        stargazers_count INT,           
-        watchers_count INT,             
-        language TEXT,                      
-        forks_count INT,                
-        open_issues INT,                
-        PRIMARY KEY (repo_id, user_id),     
-        FOREIGN KEY (user_id) REFERENCES GitUsers(user_id),
-        FOREIGN KEY (repo_id) REFERENCES Repo_dict(repo_id)
+    CREATE TABLE IF NOT EXISTS stackoverflow_data(
+    view_count INTEGER,
+    answer_count INTEGER,
+    question_count INTEGER,
+    reputation_change INTEGER,
+    reputation INTEGER,
+    link TEXT,
+    display_name TEXT,
+    user_id INTEGER,
+    bronze INTEGER,
+    silver INTEGER,
+    gold INTEGER
     )
 ''')
 
 conn.commit()
 
-# --- Insert Data for GitUsers Table ---
+# --- Insert Data into github_users_repos Table ---
 
 # Read the CSV file into a DataFrame
-gitusers_df = pd.read_csv('/Users/vedanth/Desktop/HushHush/GitUsers.csv')
+github_users_repos_df = pd.read_csv('/Users/vedanth/Desktop/HushHush/Github_Users_Repos.csv')
 
-# Print DataFrame columns and the first few rows for debugging
-print("GitUsers DataFrame columns:", gitusers_df.columns)
-print(gitusers_df.head())
+# # Print DataFrame columns and the first few rows for debugging
+print("Github Users Repos DataFrame columns:", github_users_repos_df.columns)
+print(github_users_repos_df.head())
 
-# Define the insert query for GitUsers table
-insert_gitusers_query = '''
-    INSERT OR IGNORE INTO GitUsers (
-        user_id, Email, Name, Followers_Count, Following_Count, 
-        Public_Reposcount, Public_Gistscount
-    ) VALUES (
-        ?, ?, ?, ?, ?, ?, ?
-    )
+# # Define the insert query for github_users_repos
+insert_github_users_repos_query = '''
+    INSERT INTO github_users_repos (
+        user_id, stargazers_count, watchers_count, repo_id, language, forks_count, open_issues
+    ) VALUES (?, ?, ?, ?, ?, ?, ?)
 '''
 
-# Insert data into the GitUsers table
-for row in gitusers_df.itertuples(index=False, name=None):
+# # Insert data into the github_users_repos table
+for row in github_users_repos_df.itertuples(index=False, name=None):
     if len(row) == 7:  # Ensure the row has exactly 7 values
-        c.execute(insert_gitusers_query, row)
+        c.execute(insert_github_users_repos_query, row)
     else:
         print(f"Skipping row with incorrect number of values: {row}")
 
 conn.commit()
 
-# --- Insert Data for Repo_dict Table ---
+# # --- Insert Data into github_users Table ---
 
-# Read the CSV file into a DataFrame
-repodict_df = pd.read_csv('/Users/vedanth/Desktop/HushHush/Repo_dict.csv')
+# # Read the CSV file into a DataFrame
+github_users_df = pd.read_csv('/Users/vedanth/Desktop/HushHush/Github_Users.csv')
 
 # Print DataFrame columns and the first few rows for debugging
-print("Repo_dict DataFrame columns:", repodict_df.columns)
-print(repodict_df.head())
+print("Github Users DataFrame columns:", github_users_df.columns)
+print(github_users_df.head())
 
-# Define the insert query for Repo_dict table
-insert_repodict_query = '''
-    INSERT OR IGNORE INTO Repo_dict (
-        repo_id, user_id, stargazers_count, watchers_count, language, forks_count, open_issues
-    ) VALUES (
-        ?, ?, ?, ?, ?, ?, ?
-    )
+# # Define the insert query for github_users
+insert_github_users_query = '''
+    INSERT INTO github_users (
+        user_id, Email, Name, Followers_Count, Following_Count, Public_Reposcount, Public_Gistscount
+    ) VALUES (?, ?, ?, ?, ?, ?, ?)
 '''
 
-# Insert data into the Repo_dict table
-for row in repodict_df.itertuples(index=False, name=None):
+# # Insert data into the github_users table
+for row in github_users_df.itertuples(index=False, name=None):
     if len(row) == 7:  # Ensure the row has exactly 7 values
-        c.execute(insert_repodict_query, row)
+        c.execute(insert_github_users_query, row)
     else:
         print(f"Skipping row with incorrect number of values: {row}")
 
 conn.commit()
 
-# --- Insert Data for Stared_repo_dict Table ---
+# --- Insert Data into stackoverflow_users Table ---
 
 # Read the CSV file into a DataFrame
-staredrepo_df = pd.read_csv('/Users/vedanth/Desktop/HushHush/Stared_repo_dict.csv')
+stackoverflow_df = pd.read_csv('/Users/vedanth/Desktop/HushHush/stackoverflow_newdata.csv')
 
 # Print DataFrame columns and the first few rows for debugging
-print("Stared_repo_dict DataFrame columns:", staredrepo_df.columns)
-print(staredrepo_df.head())
+print("StackOverflow DataFrame columns:", stackoverflow_df.columns)
+print(stackoverflow_df.head())
 
-# Define the insert query for Stared_repo_dict table
-insert_staredrepo_query = '''
-    INSERT OR IGNORE INTO Stared_repo_dict (
-        repo_id, user_id, stargazers_count, watchers_count, language, forks_count, open_issues
-    ) VALUES (
-        ?, ?, ?, ?, ?, ?, ?
-    )
+# Define the insert query for stackoverflow_users
+insert_stackoverflow_query = '''
+    INSERT INTO stackoverflow_data (view_count, answer_count, question_count, reputation_change, reputation, link, display_name, user_id, bronze, silver, gold) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 '''
 
-# Insert data into the Stared_repo_dict table
-for row in staredrepo_df.itertuples(index=False, name=None):
-    if len(row) == 7:  # Ensure the row has exactly 7 values
-        c.execute(insert_staredrepo_query, row)
+# Insert data into the stackoverflow_users table
+for row in stackoverflow_df.itertuples(index=False, name=None):
+    if len(row) == 11:  # Ensure the row has exactly 11 values
+        c.execute(insert_stackoverflow_query, row)
     else:
         print(f"Skipping row with incorrect number of values: {row}")
 
-# Create a new table for Repo_dict without the 'name' and 'description' columns
-c.execute('''
-    CREATE TABLE IF NOT EXISTS Repo_dict_temp (
-        repo_id INT PRIMARY KEY,        
-        user_id INT,                    
-        stargazers_count INT,           
-        watchers_count INT,             
-        language TEXT,                      
-        forks_count INT,                
-        open_issues INT,                
-        FOREIGN KEY (user_id) REFERENCES GitUsers(user_id)
-    )
-''')
-
-# Create a new table for Stared_repo_dict without the 'name' and 'description' columns
-c.execute('''
-    CREATE TABLE IF NOT EXISTS Stared_repo_dict_temp (
-        repo_id INT,                    
-        user_id INT,                    
-        stargazers_count INT,           
-        watchers_count INT,             
-        language TEXT,                      
-        forks_count INT,                
-        open_issues INT,                
-        PRIMARY KEY (repo_id, user_id),     
-        FOREIGN KEY (user_id) REFERENCES GitUsers(user_id),
-        FOREIGN KEY (repo_id) REFERENCES Repo_dict(repo_id)
-    )
-''')
-
-# Copy data from old Repo_dict to new Repo_dict_temp
-c.execute('''
-    INSERT INTO Repo_dict_temp (repo_id, user_id, stargazers_count, watchers_count, language, forks_count, open_issues)
-    SELECT repo_id, user_id, stargazers_count, watchers_count, language, forks_count, open_issues
-    FROM Repo_dict
-''')
-
-# Copy data from old Stared_repo_dict to new Stared_repo_dict_temp
-c.execute('''
-    INSERT INTO Stared_repo_dict_temp (repo_id, user_id, stargazers_count, watchers_count, language, forks_count, open_issues)
-    SELECT repo_id, user_id, stargazers_count, watchers_count, language, forks_count, open_issues
-    FROM Stared_repo_dict
-''')
-
-# Drop the old tables
-c.execute('DROP TABLE IF EXISTS Repo_dict')
-c.execute('DROP TABLE IF EXISTS Stared_repo_dict')
-
-# Rename the new tables to the original table names
-c.execute('ALTER TABLE Repo_dict_temp RENAME TO Repo_dict')
-c.execute('ALTER TABLE Stared_repo_dict_temp RENAME TO Stared_repo_dict')
-
 conn.commit()
+
+# --- Finalize the database and close connection ---
 conn.close()
