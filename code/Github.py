@@ -56,7 +56,6 @@ for j in range (0,875,30):
          #  To avoid duplicate fetching of same user data
          if(user['id'] > completed_user_id):
             usr = requests.get(user_url, headers= headers, timeout=5)
-            # user_url.append(usr)
             usr.raise_for_status
             userdata = usr.json()
             repos = requests.get(repos_url, headers= headers, timeout=5)
