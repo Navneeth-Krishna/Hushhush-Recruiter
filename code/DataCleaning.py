@@ -1,9 +1,14 @@
 import pandas as pd
 from difflib import SequenceMatcher
+import json
 
-Git_Users_df = pd.read_csv("Github_Users.csv")
-Repos_df = pd.read_csv('Github_Users_Repos.csv' )
-Stack_Users_df = pd.read_csv("stackoverflow_newdata.csv")
+# Git_Users_df = pd.read_csv("D:\\git\\bdp-apr24-exam-bdp_apr24_group1\\code\\Github_Users.csv")
+# Repos_df = pd.read_csv('D:\\git\\bdp-apr24-exam-bdp_apr24_group1\\code\\Github_Users_Repos.csv' )
+# Stack_Users_df = pd.read_csv("D:\\git\\bdp-apr24-exam-bdp_apr24_group1\\code\\stackoverflow.csv")
+
+Git_Users_df = pd.read_csv('Github_Users.csv')
+Repos_df = pd.read_csv('Github_Users_Repos.csv')
+Stack_Users_df = pd.read_csv('stackoverflow.csv')
 
 names_1 = Git_Users_df['Name']
 names_2 = Stack_Users_df['display_name']
@@ -33,11 +38,32 @@ merged =merged2_df.drop_duplicates()
 
 mergeduser = merged.drop(columns=['Name in File Git','Name in File Stack'])
 
-merge = pd.merge(mergeduser,user_counts , how='inner',left_on='user_id_x', right_on='user_id')
-df = merge.rename(columns={'user_id_x': 'id'})
+merge = pd.merge(mergeduser,user_counts , how='inner', on ='user_id')
+# df = merge.rename(columns={'user_id': 'id'})
 
-final = df.drop_duplicates()
-Final = final.drop(columns=['display_name','reputation_change_quarter','link','user_id_y','user_id'])
+final = merge.drop_duplicates()
+Final = final.drop(columns=['display_name','reputation_change_quarter','link','Unnamed: 9','Unnamed: 10','Unnamed: 11','Unnamed: 12','Unnamed: 13','User_id'])
+
+# Step 2: Extract the JSON data from the 'badge' column (replace 'badge' with the actual column name)
+def parse_badges(badge):
+    try:
+        # Step 3: Convert the JSON-like string into a dictionary
+        badge_dict = json.loads(badge.replace("'", '"'))  # Convert single quotes to double quotes
+        return badge_dict
+    except:
+        return {'bronze': 0, 'silver': 0, 'gold': 0}  # Handle missing or malformed data
+
+# Apply the function to the 'badge' column
+badge_parsed = Final['badge_counts'].apply(parse_badges)
+
+# Step 4: Create new columns for bronze, silver, and gold
+Final['bronze'] = badge_parsed.apply(lambda x: x.get('bronze', 0))
+Final['silver'] = badge_parsed.apply(lambda x: x.get('silver', 0))
+Final['gold'] = badge_parsed.apply(lambda x: x.get('gold', 0))
+
+# Step 5: Drop the original 'badge' column if no longer needed
+Final = Final.drop('badge_counts', axis=1)
+
 Clean_df =pd.DataFrame(Final)
 Clean_df.to_csv('dataclean.csv', index=False)
 print("completed")
