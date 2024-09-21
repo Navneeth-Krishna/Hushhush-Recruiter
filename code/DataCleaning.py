@@ -1,10 +1,14 @@
 import pandas as pd
 from difflib import SequenceMatcher
-import json
+import sqlite3
 
-Git_Users_df = pd.read_csv("D:\\git\\bdp-apr24-exam-bdp_apr24_group1\\code\\Github_Users.csv")
-Repos_df = pd.read_csv('D:\\git\\bdp-apr24-exam-bdp_apr24_group1\\code\\Github_Users_Repos.csv' )
-Stack_Users_df = pd.read_csv("D:\\git\\bdp-apr24-exam-bdp_apr24_group1\\code\\stackoverflow.csv")
+
+#connecting to database and load the tables
+conn = sqlite3.connect('hushhushDB.db')
+
+Git_Users_df = pd.read_sql_query("SELECT * FROM github_users", conn)
+Repos_df = pd.read_sql_query("SELECT * FROM github_users_repos", conn)
+Stack_Users_df = pd.read_sql_query("SELECT * FROM stackoverflow_data",conn)
 
 names_1 = Git_Users_df['Name']
 names_2 = Stack_Users_df['display_name']
@@ -34,26 +38,19 @@ merged =merged2_df.drop_duplicates()
 
 mergeduser = merged.drop(columns=['Name in File Git','Name in File Stack'])
 
-merge = pd.merge(mergeduser,user_counts , how='inner', on ='user_id')
+merge = pd.merge(mergeduser,user_counts , how='inner',left_on='user_id_x', right_on='user_id')
+df = merge.rename(columns={'user_id_x': 'id'})
 
-final = merge.drop_duplicates()
-Final = final.drop(columns=['display_name','reputation_change_quarter','link','Unnamed: 9','Unnamed: 10','Unnamed: 11','Unnamed: 12','Unnamed: 13','User_id'])
+final = df.drop_duplicates()
+Final = final.drop(columns=['display_name','reputation_change','link','user_id_y','user_id'])
+# Clean_df =pd.DataFrame(Final)
+# Clean_df.to_csv('dataclean.csv', index=False)
+# print("completed")
 
-def parse_badges(badge):
-    try:
-        badge_dict = json.loads(badge.replace("'", '"'))  
-        return badge_dict
-    except:
-        return {'bronze': 0, 'silver': 0, 'gold': 0}  # Handle missing or malformed data
+# after cleaning pushing the data into live table.
+Final.to_sql('live_data', conn, if_exists='replace', index=False)
 
-badge_parsed = Final['badge_counts'].apply(parse_badges)
+# Close the SQLite connection
+conn.close()
 
-Final['bronze'] = badge_parsed.apply(lambda x: x.get('bronze', 0))
-Final['silver'] = badge_parsed.apply(lambda x: x.get('silver', 0))
-Final['gold'] = badge_parsed.apply(lambda x: x.get('gold', 0))
-
-Final = Final.drop('badge_counts', axis=1)
-
-Clean_df =pd.DataFrame(Final)
-Clean_df.to_csv('dataclean.csv', index=False)
-print("completed")
+print("Data pulled, cleaned, and pushed to 'live_data' table successfully.")
