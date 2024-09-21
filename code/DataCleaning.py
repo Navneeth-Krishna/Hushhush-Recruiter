@@ -43,14 +43,10 @@ df = merge.rename(columns={'user_id_x': 'id'})
 
 final = df.drop_duplicates()
 Final = final.drop(columns=['display_name','reputation_change','link','user_id_y','user_id'])
-# Clean_df =pd.DataFrame(Final)
-# Clean_df.to_csv('dataclean.csv', index=False)
-# print("completed")
 
 # after cleaning pushing the data into live table.
 Final.to_sql('live_data', conn, if_exists='replace', index=False)
 
 # Close the SQLite connection
 conn.close()
-
 print("Data pulled, cleaned, and pushed to 'live_data' table successfully.")
