@@ -18,6 +18,7 @@ c.execute('''
 ''')
 conn.commit()
 
+
 # Read the CSV file into a DataFrame
 github_users_df = pd.read_csv('Github_Users.csv')
 
