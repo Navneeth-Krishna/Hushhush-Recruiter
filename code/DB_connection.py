@@ -1,9 +1,10 @@
 import sqlite3
 import pandas as pd
+
 # Establish a connection to the SQLite database
 conn = sqlite3.connect('hushhushDB.db')
 c = conn.cursor()
-# # Creating table for Github_Users
+# Creating table for Github_Users
 c.execute('''
     CREATE TABLE IF NOT EXISTS github_users (
         user_id INTEGER PRIMARY KEY,
@@ -18,7 +19,7 @@ c.execute('''
 conn.commit()
 
 # Read the CSV file into a DataFrame
-github_users_df = pd.read_csv('/Users/vedanth/Desktop/HushHush/Github_Users.csv')
+github_users_df = pd.read_csv('Github_Users.csv')
 
 # Print DataFrame columns and the first few rows for debugging
 print("Github Users DataFrame columns:", github_users_df.columns)
@@ -57,7 +58,7 @@ c.execute('''
 conn.commit()
 
 # Read the CSV file into a DataFrame
-github_users_repos_df = pd.read_csv('/Users/vedanth/Desktop/HushHush/Github_Users_Repos.csv')
+github_users_repos_df = pd.read_csv('Github_Users_Repos.csv')
 
 # # Print DataFrame columns and the first few rows for debugging
 print("Github Users Repos DataFrame columns:", github_users_repos_df.columns)
@@ -98,7 +99,7 @@ c.execute('''
 conn.commit()
 
 # Read the CSV file into a DataFrame
-stackoverflow_df = pd.read_csv('/Users/vedanth/Desktop/HushHush/stackoverflow_newdata.csv')
+stackoverflow_df = pd.read_csv('stackoverflow_newdata.csv')
 
 # Print DataFrame columns and the first few rows for debugging
 print("StackOverflow DataFrame columns:", stackoverflow_df.columns)
