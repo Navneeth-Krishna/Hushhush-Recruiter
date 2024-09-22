@@ -1,12 +1,16 @@
 from flask import Flask, request, jsonify, render_template
 from Form_link_email import send_email
 import sqlite3
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
  
 app = Flask(__name__)
  
 # Your email credentials.
-SENDER_EMAIL = 'ts4235762@gmail.com'
-SENDER_PASSWORD = 'ypwz xwyj wufc eglc'
+SENDER_EMAIL = os.getenv('EMAIL')
+SENDER_PASSWORD = os.getenv('PASSWORD')
 JOB_ROLE = "Software Engineer"
 GOOGLE_FORM_LINK = "https://docs.google.com/forms/d/e/1FAIpQLSdt-jRV3uf0hMh5tvlkdEKE1pTVztmLXfA4ezY-MIAco4CKSw/viewform?vc=0&c=0&w=1&flr=0"
 IMAGE_PATH = "Mail_Img.jpg"
