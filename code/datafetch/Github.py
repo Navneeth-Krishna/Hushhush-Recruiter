@@ -2,6 +2,10 @@ import requests
 import numpy as np
 import pandas as pd
 import time
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 # Defne the parameters
 Repos_Data = []
@@ -41,7 +45,7 @@ def UserRepoDetails (id , repos_data):
 
 # Logic for getting the data
 headers = {
-    "Authorization": "token  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"
+    "Authorization": f"token {os.getenv('GITHUB_TOKEN')}"
 }
 for j in range (0,875,30):
    link = f"https://api.github.com/users?since={j}"
