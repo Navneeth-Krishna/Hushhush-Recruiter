@@ -9,7 +9,7 @@ SENDER_EMAIL = 'ts4235762@gmail.com'
 SENDER_PASSWORD = 'ypwz xwyj wufc eglc'
 JOB_ROLE = "Software Engineer"
 GOOGLE_FORM_LINK = "https://docs.google.com/forms/d/e/1FAIpQLSdt-jRV3uf0hMh5tvlkdEKE1pTVztmLXfA4ezY-MIAco4CKSw/viewform?vc=0&c=0&w=1&flr=0"
-IMAGE_PATH = "C:/Users/dhans/Downloads/WhatsApp Image 2024-09-19 at 23.02.58_4dc12f66.jpg"
+IMAGE_PATH = "Mail_Img.jpg"
  
 
  
@@ -37,6 +37,7 @@ def send_email_route():
         send_email(SENDER_EMAIL, SENDER_PASSWORD, recipient_email, recipient_name, JOB_ROLE, GOOGLE_FORM_LINK, IMAGE_PATH)
         return jsonify({"status": "success"}), 200
     except Exception as e:
+        app.logger.error(f"Error sending email: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
  
 
