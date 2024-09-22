@@ -37,7 +37,7 @@ function sendEmailNotification() {
 }
 
 function createUniqueColabLink(candidateName) {
-  var originalColabLink = 'https://colab.research.google.com/drive/1zg8SHj68WO0LdCI1xCWkyOjSvDkPmMKA?usp=sharing';
+  var originalColabLink = 'https://colab.research.google.com/drive/1voDbkeYImbWyqwXelr_ya8nh4Yf0qXgu?usp=sharing';
   var fileId = originalColabLink.includes('/drive/') ? originalColabLink.split('/drive/')[1].split('?')[0] : null;
   if (!fileId) return null;
   var copy = DriveApp.getFileById(fileId).makeCopy("Colab_" + candidateName + "_Recruitment_Challenge");
