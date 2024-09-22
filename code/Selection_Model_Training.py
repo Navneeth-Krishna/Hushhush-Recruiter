@@ -13,7 +13,7 @@ conn = sqlite3.connect('hushhushDB.db')
 
 df = pd.read_sql_query("SELECT * FROM live_data", conn)
 
-df = pd.read_csv("D:\\git\\bdp-apr24-exam-bdp_apr24_group1\\code\\dataclean.csv")
+df = pd.read_csv("dataclean.csv")
 df2 = df.drop(columns=['Name', 'Email','Public Reposcount','Public Gistscount'])
 
 scaler = StandardScaler()
