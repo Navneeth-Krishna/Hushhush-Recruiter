@@ -57,7 +57,7 @@ for page_number in range(1, 15):
         break
 
 # Save user records to a CSV file
-csv_filename = '/Users/vedanth/Desktop/HushHush/stackoverflow_users.csv'
+csv_filename = 'stackoverflow_users.csv'
 with open(csv_filename, 'w', newline='', encoding='utf-8') as csvfile:
     fieldnames = user_records[0].keys()
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
